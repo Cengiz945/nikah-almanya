@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nikâh & Almanya</title>
+<meta name="robots" content="noindex">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Nikâh & Almanya">
+<meta name="theme-color" content="#F4F1EC">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+/* Layout: eine ruhige Spalte. Oben „Als Nächstes“-Karte, darunter sechs Gruppen nach Ort/Gelegenheit, jede Aufgabe tippbar mit Hintergrundinfo. */
+:root{
+  --bg:#F4F1EC; --card:#FFFFFF; --ink:#1A2433; --sub:#5E6878; --line:#E4DED4; --soft:#F8F6F2;
+  --navy:#20375A; --red:#B8433A; --teal:#0E7A74; --gold:#A8792A; --plum:#6A4C93; --green:#2E7D4F;
+  --ok:#2E7D4F; --ok-soft:#E3F1E8;
+  --r:16px; color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#10161F; --card:#18212D; --ink:#E8EDF3; --sub:#9AA6B5; --line:#283545; --soft:#1D2734;
+  --navy:#9DB7E0; --red:#EE8F86; --teal:#5CC6BF; --gold:#E0B464; --plum:#BFA4EA; --green:#7FD0A0;
+  --ok:#7FD0A0; --ok-soft:#173023; color-scheme:dark}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) calc(96px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+[hidden]{display:none!important}
+.wrap{max-width:720px;margin:0 auto}
+button{font:inherit;color:inherit}
+a{color:var(--teal)}
+:focus-visible{outline:3px solid var(--teal);outline-offset:2px;border-radius:8px}
+
+/* Kopf */
+header{padding:28px 0 8px;display:grid;gap:4px}
+.kicker{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);font-weight:600}
+h1{margin:0;font-size:clamp(1.7rem,6.5vw,2.3rem);line-height:1.1;letter-spacing:-.01em;font-weight:750;color:var(--navy)}
+h1 small{display:block;font-size:.55em;font-weight:500;color:var(--sub);letter-spacing:0;margin-top:6px}
+.overall{display:flex;align-items:center;gap:12px;margin-top:14px}
+.bar{flex:1;height:10px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--ok);border-radius:99px;transition:width .4s}
+.overall b{font-variant-numeric:tabular-nums;min-width:3.5em;text-align:right}
+
+/* Als Nächstes */
+.next{margin:20px 0 6px;background:var(--navy);color:var(--bg);border-radius:20px;padding:18px 18px 16px;display:grid;gap:6px;cursor:pointer;border:0;text-align:left;width:100%}
+.next .lab{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;opacity:.75;font-weight:600}
+.next .t{font-size:1.2rem;font-weight:700;line-height:1.25}
+.next .d{opacity:.8;font-size:.92rem}
+.next .w{font-size:.85rem;opacity:.85;display:flex;gap:6px;align-items:center}
+.next .w svg{width:14px;height:14px;flex:none}
+@media (prefers-color-scheme: dark){.next{color:#10161F}}
+
+/* Gruppen */
+.group{margin-top:26px}
+.ghead{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.gicon{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;flex:none;color:#fff;font-size:1.3rem}
+.gtitle{flex:1;min-width:0}
+.gtitle h2{margin:0;font-size:1.15rem;line-height:1.2}
+.gtitle p{margin:2px 0 0;color:var(--sub);font-size:.88rem;font-style:italic}
+.gcount{font-size:.85rem;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap}
+.list{background:var(--card);border-radius:var(--r);border:1px solid var(--line);overflow:hidden}
+.item{border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.row{display:flex;align-items:flex-start;gap:12px;padding:14px 14px 14px 12px}
+.chk{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:transparent;cursor:pointer;display:grid;place-items:center;margin-top:1px;transition:background .15s,border-color .15s}
+.chk svg{width:16px;height:16px;opacity:0}
+.item.done .chk{background:var(--ok);border-color:var(--ok)}
+.item.done .chk svg{opacity:1}
+.txt{flex:1;min-width:0;background:none;border:0;padding:0;text-align:left;cursor:pointer;display:grid;gap:2px}
+.tr{font-weight:650;line-height:1.3;overflow-wrap:anywhere}
+.de{color:var(--sub);font-size:.9rem;font-style:italic;line-height:1.3;overflow-wrap:anywhere}
+.item.done .tr,.item.done .de{text-decoration:line-through;text-decoration-thickness:1px;opacity:.55}
+.where{display:inline-flex;gap:5px;align-items:center;font-size:.78rem;color:var(--sub);margin-top:5px}
+.where svg{width:13px;height:13px;flex:none}
+.arrow{flex:none;width:20px;height:20px;color:var(--sub);margin-top:6px;transition:transform .2s}
+.item.open .arrow{transform:rotate(90deg)}
+.flag{display:inline-block;font-size:.72rem;font-weight:700;color:var(--red);background:color-mix(in srgb,var(--red) 12%,transparent);padding:1px 8px;border-radius:99px;margin-top:6px;justify-self:start}
+
+.info{padding:0 16px 16px 54px;display:grid;gap:12px}
+.blk{background:var(--soft);border-radius:12px;padding:10px 12px;display:grid;gap:4px}
+.blk h4{margin:0;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sub)}
+.blk p{margin:0;font-size:.93rem}
+.blk p.de2{color:var(--sub);font-style:italic;font-size:.88rem}
+.blk ul{margin:2px 0 0;padding-left:18px;font-size:.93rem}
+.blk li{margin:2px 0}
+.blk li span{display:block;color:var(--sub);font-style:italic;font-size:.86rem}
+.go{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:12px;background:var(--teal);color:#fff;text-decoration:none;font-weight:600;justify-self:start}
+@media (prefers-color-scheme: dark){.go{color:#10161F}}
+.kl{list-style:none;padding:0!important}
+.kl li{padding:6px 0;border-top:1px dashed var(--line);overflow-wrap:anywhere}
+.kl li:first-child{border-top:0;padding-top:0}
+.src{display:grid;gap:6px}
+.src h4{margin:0;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sub)}
+.src a{font-size:.85rem;overflow-wrap:anywhere}
+.sub-h{margin:14px 14px 4px;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);font-weight:700}
+
+/* Fuß */
+.foot{margin-top:30px;color:var(--sub);font-size:.82rem;display:grid;gap:6px}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:5;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line)}
+.dock .wrap{display:flex;gap:10px}
+.dock button{flex:1;min-height:50px;border-radius:14px;border:1px solid var(--line);background:var(--card);font-weight:650;cursor:pointer;line-height:1.15}
+.dock button.pri{background:var(--navy);color:var(--bg);border-color:var(--navy)}
+.dock small{display:block;font-weight:400;font-size:.75rem;opacity:.75}
+.stamp{font-size:.8rem;color:var(--sub);text-align:center;margin-top:6px}
+
+.overlay{position:fixed;inset:0;z-index:20;background:rgba(10,16,25,.5);display:grid;place-items:end center;padding:16px}
+.sheet{background:var(--card);border-radius:20px;padding:20px;max-width:520px;width:100%;display:grid;gap:12px;margin-bottom:env(safe-area-inset-bottom,0px)}
+.sheet h3{margin:0}
+.sheet p{margin:0;color:var(--sub);font-size:.92rem}
+.sheet textarea{width:100%;min-height:120px;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--soft);font:16px/1.4 ui-monospace,Menlo,monospace;color:var(--ink)}
+.sheet .btns{display:flex;gap:10px;flex-wrap:wrap}
+.sheet .btns button{flex:1;min-height:48px;border-radius:12px;border:1px solid var(--line);background:var(--soft);font-weight:600;cursor:pointer}
+.sheet .btns .pri{background:var(--navy);color:var(--bg);border-color:var(--navy)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:.92rem;max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{.dock,.next,.chk svg{display:none}.info{display:grid!important}.item{break-inside:avoid}body{padding:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="kicker">F & C</span>
+    <h1>Nikâh ve Almanya yolu<small>Heirat und der Weg nach Deutschland</small></h1>
+    <div class="overall"><div class="bar"><i id="bar"></i></div><b id="pct">0 %</b></div>
+  </header>
+
+  <button class="next" id="next" type="button">
+    <span class="lab">Sıradaki · Als Nächstes</span>
+    <span class="t" id="next-tr"></span>
+    <span class="d" id="next-de"></span>
+    <span class="w" id="next-w"></span>
+  </button>
+
+  <main id="groups"></main>
+
+  <div class="foot">
+    <p>Bilgiler 23.10.2026 tarihli. Kesin kararı ilgili makam verir. / <i>Stand 23.10.2026. Verbindlich entscheidet die jeweilige Behörde.</i></p>
+  </div>
+</div>
+
+<div class="dock"><div class="wrap">
+  <button class="pri" id="b-send" type="button">Paylaş<small>Stand senden</small></button>
+  <button id="b-paste" type="button">Ekle<small>Stand einfügen</small></button>
+</div><div class="stamp" id="stamp"></div></div>
+
+<div class="overlay" id="ov" hidden><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-t">
+  <h3 id="sh-t"></h3><p id="sh-p"></p><div id="sh-x"></div><div class="btns" id="sh-b"></div>
+</div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+"use strict";
+var PIN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>';
+var CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+var ARROW='<svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>';
+
+/* i(id, tr, de, wo[tr,de], info[[tr,de]...], docs[[tr,de]...], link, flag) */
+function i(id,tr,de,wo,info,docs,link,flag){return{id:id,tr:tr,de:de,wo:wo,info:info||[],docs:docs||[],link:link||null,flag:flag||null}}
+
+var G=[
+ {id:"online",color:"var(--red)",icon:"💻",tr:"Online – hemen",de:"Online – sofort",items:[
+  i("o1","Auslandsportal’a hemen kaydol","Sofort im Auslandsportal registrieren",["digital.diplo.de","Auslandsportal des Auswärtigen Amts"],
+    [["Randevuya kadar bekleme 2 ay ile 1 yıldan fazla. Sıra kayıt tarihine göre verilir – erken kayıt = erken randevu.","Wartezeit bis zum Termin 2 Monate bis über 1 Jahr. Reihenfolge nach Registrierungsdatum – früh registrieren = früher Termin."],
+     ["Kayıt henüz başvuru değildir. Portal gerekli belgelerin tam listesini gösterir.","Die Registrierung ist noch kein Antrag. Das Portal zeigt die genaue Unterlagenliste."],
+     ["Nikâhtan önce kayıt olunabilir mi? Sayfada yazmıyor – portalda sor.","Geht das schon vor der Heirat? Steht nicht auf der Seite – im Portal fragen."]],
+    [],"https://digital.diplo.de/visa-fz","Acil · Dringend"),
+  i("o2","Öğretmenlik tanınma başvurusu","Anerkennung als Lehrerin beantragen",["Berlin Eğitim Senatosu – Tanınma Birimi (online, BundID)","Senatsverwaltung für Bildung – Anerkennungsstelle (online, BundID)"],
+    [["Türkiye’den de yapılabilir. Ücret 85 € (kısa karar) veya 340 € (ayrıntılı karar). Karar 3–6 ay.","Geht auch aus der Türkei. 85 € (Kurzbescheid) oder 340 € (ausführlicher Bescheid). Entscheidung nach 3–6 Monaten."],
+     ["Kısa kararla Berlin’de vekil öğretmen olarak çalışılabilir.","Mit dem Kurzbescheid kann man in Berlin schon als Vertretungslehrkraft arbeiten."],
+     ["Önce aşağıdaki „Öğretmenlik belgeleri“ hazır olmalı.","Vorher die Unterlagen unter „Lehrerin – Unterlagen“ sammeln."]],
+    [],"https://service.berlin.de/dienstleistung/329595/")
+ ]},
+ {id:"tr",color:"var(--teal)",icon:"🇹🇷",tr:"Türkiye’de",de:"In der Türkei",items:[
+  i("t1","A1 Almanca sınavı","Deutschprüfung A1",["Goethe-Institut (Ankara, İstanbul, İzmir) veya ÖSD sınav merkezi","Goethe-Institut oder ÖSD-Prüfzentrum"],
+    [["Sadece Goethe „Start Deutsch 1“ ve ÖSD kabul edilir.","Nur Goethe „Start Deutsch 1“ und ÖSD werden anerkannt."],
+     ["Vize başvurusunda aslı gerekir ve en fazla 12 aylık olmalı – sınavı randevuya göre planla.","Beim Visumantrag im Original, höchstens 12 Monate alt – Prüfung passend zum Termin legen."],
+     ["Yasal dayanak: § 30 AufenthG. Muafiyet pratikte yok (Federal İdare Mahkemesi 2019).","Rechtsgrundlage: § 30 AufenthG. Ausnahme praktisch nicht (BVerwG 2019)."]],[],"https://www.goethe.de/ins/tr/de/sta/ist/prf/gzsd1.cfm"),
+  i("t2","Tam Tekmil Vukuatlı Nüfus Kayıt Örneği","Vollständiger Personenstandsauszug",["Nüfus Müdürlüğü veya e-Devlet (QR kodlu)","Nüfus Müdürlüğü oder e-Devlet (mit QR-Code)"],
+    [["„Düşünceler“ bölümü eksiksiz olmalı. Vize için yeminli Almanca tercümesiyle.","Abschnitt „Bemerkungen“ vollständig. Fürs Visum mit beglaubigter deutscher Übersetzung."]]),
+  i("t3","Evlilik için sağlık raporu","Gesundheitszeugnis für die Heirat",["Aile hekimi","Hausarzt (aile hekimi)"],
+    [["Fotoğraflı ve kaşeli, 6 ay geçerli. İkiniz için de gerekli.","Mit Foto und Stempel, 6 Monate gültig. Für beide nötig."]]),
+  i("t4","Biyometrik fotoğraflar","Biometrische Fotos",["Fotoğrafçı","Fotograf"],
+    [["Nikâh için 3 adet, vize için 1 adet (35×45 mm, 6 aydan eski olmayan).","3 für die Heirat, 1 fürs Visum (35×45 mm, nicht älter als 6 Monate)."]]),
+  i("t5","Yeminli Almanca tercümeler","Beglaubigte Übersetzungen ins Deutsche",["Yeminli tercüman + Noter","Beeidigter Übersetzer + Notar"],
+    [["Formül A ve Formül B için tercüme gerekmez.","Formül A und B brauchen keine Übersetzung."]],
+    [["F’nin nüfus kayıt örneği","Personenstandsauszug F"],["C’nin nüfus kayıt örneği","Personenstandsauszug C"],["Varsa boşanma kararı (apostilli)","Falls vorhanden: Scheidungsurteil (mit Apostille)"]]),
+  i("t6","Vize randevusu ve parmak izi","Visumtermin und Fingerabdrücke",["Alman vize bölümü – Ankara, İstanbul veya İzmir (ile göre)","Deutsche Visastelle – je nach Provinz"],
+    [["İstanbul: İstanbul, Bursa, Kocaeli, Edirne, Sakarya vb. · İzmir: İzmir, Antalya, Aydın, Muğla, Denizli vb. · Diğer iller: Ankara.","Istanbul, Izmir oder Ankara je nach Provinz."],
+     ["Tek hizmet sağlayıcı iDATA. Randevu satan kişilere para verme.","Einziger Dienstleister ist iDATA. Niemandem Geld für Termine zahlen."]],
+    [["Pasaport + bilgi sayfası fotokopisi","Pass + Kopie der Datenseite"],["Biyometrik fotoğraf","Biometrisches Foto"],["A1 belgesinin aslı","A1-Zertifikat im Original"],["Formül B","Formül B"],["Nüfus kayıt örnekleri + tercüme","Personenstandsauszüge + Übersetzung"],["C’nin belgeleri (aşağıda „Berlin’de“)","Unterlagen von C (unter „In Berlin“)"],["UPS ve iletişim formu","UPS- und Kontaktformular"],["Vize ücreti 75 € (çocuk 40 €)","Visumgebühr 75 € (Kind 40 €)"],["Asıllar + her birinden 2 fotokopi","Originale + je 2 Kopien"]],
+    "https://tuerkei.diplo.de/tr-tr/service/05-visaeinreise/2769600-2769600")
+ ]},
+ {id:"berlin",color:"var(--navy)",icon:"🇩🇪",tr:"Berlin’de",de:"In Berlin",items:[
+  i("b1","Medeni hâlin „bekâr“ mı? Kontrol et","Familienstand „ledig“ prüfen",["e-Devlet veya T.C. Berlin Başkonsolosluğu","e-Devlet oder türkisches Generalkonsulat Berlin"],
+    [["Evlendirme dairesi evlenme ehliyet belgesini sistemden kendisi alır. Kayıt yanlışsa nikâh kıyılamaz.","Das Standesamt holt die Ehefähigkeit selbst aus dem Register. Ist der Eintrag falsch, geht die Heirat nicht."]]),
+  i("b2","İkamet belgesi (Meldebescheinigung)","Meldebescheinigung",["Bürgeramt","Bürgeramt"],
+    [["F’nin vizesi için. Randevu gününde en fazla 6 aylık olmalı. Aslını F’ye gönder.","Für das Visum von F. Am Termin höchstens 6 Monate alt. Original an F schicken."]]),
+  i("b3","Pasaport ve oturum kartı fotokopisi","Kopie von Pass und Aufenthaltstitel",["–","–"],
+    [["Oturum kartının ön ve arka yüzü. F’ye gönder.","Vorder- und Rückseite des Titels. An F schicken."]]),
+  i("b4","Gelir belgeleri","Einkommensnachweise",["İşveren – personel bölümü","Arbeitgeber – Personalstelle"],
+    [["Berlin Göç Dairesi (LEA) vizeye onay vermeden önce bunları ister. Yasal dayanak: § 5, § 29 AufenthG.","Das Landesamt für Einwanderung verlangt sie, bevor es dem Visum zustimmt. Rechtsgrundlage: § 5, § 29 AufenthG."]],
+    [["İş sözleşmesi","Arbeitsvertrag"],["Son 6 ayın maaş bordroları","Gehaltsabrechnungen der letzten 6 Monate"],["İşveren yazısı (en fazla 14 günlük)","Arbeitgeberbescheinigung (höchstens 14 Tage alt)"]]),
+  i("b5","Kira sözleşmesi","Mietvertrag",["Ev sahibi","Vermieter"],
+    [["Berlin kişi başı en az 9 m² ister. 76 m² üç kişi için rahatça yeterli.","Berlin verlangt mindestens 9 m² pro Person. 76 m² reichen für drei klar."]],
+    [["Kira sözleşmesi","Mietvertrag"],["Sıcak kira belgesi","Nachweis der Warmmiete"]]),
+  i("b6","Aile sigortasını sor","Familienversicherung klären",["C’nin hastalık kasası","Krankenkasse von C"],
+    [["F ayda en fazla 565 € kazandığı sürece ücretsiz sigortalı olur (§ 10 SGB V, 2026).","Kostenlos mitversichert, solange F höchstens 565 € im Monat verdient (§ 10 SGB V, 2026)."]]),
+  i("b7","LEA’nın sorularını yanıtla","Anfragen des LEA beantworten",["Landesamt für Einwanderung (LEA) Berlin","Landesamt für Einwanderung (LEA) Berlin"],
+    [["Vize ancak LEA onaylarsa çıkar. F’nin randevusundan sonra sana yazarlar – hızlı cevap ver.","Das Visum kommt erst nach Zustimmung des LEA. Es meldet sich nach dem Termin von F – schnell antworten."]])
+ ]},
+ {id:"nikah",color:"var(--gold)",icon:"💍",tr:"Türkiye’de birlikte – Nikâh",de:"Zusammen in der Türkei – Heirat",items:[
+  i("n1","Nikâh","Heirat",["Evlendirme Müdürlüğü (Belediye) – F’nin oturduğu yerde","Standesamt der Gemeinde – am Wohnort von F"],
+    [["C’nin Türkiye’de adresi olması gerekmez; ikinizden birinin adresi yeterli.","C braucht keine Adresse in der Türkei; die Adresse von einem reicht."],
+     ["Kesin belge listesini daireden önceden yazılı iste.","Genaue Liste vorher schriftlich beim Standesamt erfragen."]],
+    [["T.C. kimlik kartı (pasaport geçmez)","Türkischer Personalausweis (Pass reicht nicht)"],["Sağlık raporları","Gesundheitszeugnisse"],["Fotoğraflar","Fotos"],["Evlenme beyannamesi (dairede doldurulur)","Heiratserklärung (wird vor Ort ausgefüllt)"]]),
+  i("n2","Birkaç adet Formül B al","Mehrere Formül B (internationale Heiratsurkunde) holen",["Evlendirme Müdürlüğü","Standesamt"],
+    [["Almanya’da tercümesiz ve apostilsiz geçerli. Aile cüzdanı Almanya’da kabul edilmez.","In Deutschland ohne Übersetzung und Apostille gültig. Das Familienbuch wird nicht anerkannt."]]),
+  i("n3","Yeni nüfus kayıt örneği (evli)","Neuer Personenstandsauszug (verheiratet)",["Nüfus Müdürlüğü veya e-Devlet","Nüfus Müdürlüğü oder e-Devlet"],
+    [["İkiniz için. Vize başvurusuna tercümesiyle eklenir.","Für beide. Kommt mit Übersetzung zum Visumantrag."]])
+ ]},
+ {id:"zusammen",color:"var(--green)",icon:"🏠",tr:"Berlin’de birlikte",de:"Zusammen in Berlin",items:[
+  i("z1","Adres kaydı – 2 hafta içinde","Anmeldung – innerhalb von 2 Wochen",["Bürgeramt","Bürgeramt"],
+    [["Yasal dayanak § 17 BMG. Vergi numarası (Steuer-ID) sonra postayla gelir.","Rechtsgrundlage § 17 BMG. Die Steuer-ID kommt danach per Post."]],
+    [["Pasaport","Pass"],["Ev sahibi onayı (Wohnungsgeberbestätigung)","Wohnungsgeberbestätigung"]]),
+  i("z2","Aile sigortasını başlat","Familienversicherung starten",["C’nin hastalık kasası","Krankenkasse von C"]),
+  i("z3","Oturum izni başvurusu","Aufenthaltserlaubnis beantragen",["LEA – sadece online","LEA – nur online"],
+    [["Ücret online ödenir, sonra LEA randevuya çağırır. Oturum izniyle çalışmak serbest (§ 4a AufenthG).","Gebühr online zahlen, dann lädt das LEA ein. Arbeiten ist erlaubt (§ 4a AufenthG)."]],
+    [["Pasaportlar","Pässe"],["Formül B","Formül B"],["Gelir belgeleri","Einkommensnachweise"],["Kira sözleşmesi","Mietvertrag"],["Sigorta belgesi","Versicherungsnachweis"]],"https://service.berlin.de/dienstleistung/305289/"),
+  i("z4","Banka hesabı","Bankkonto",["Banka","Bank"],[],[["Pasaport","Pass"],["Adres kaydı","Anmeldung"]]),
+  i("z5","Uyum kursu (B1’e kadar)","Integrationskurs (bis B1)",["Kurs merkezi – katılım belgesi LEA/BAMF’tan","Kursträger – Berechtigung über LEA/BAMF"],
+    [["700 saat. Aile birleşimiyle katılım hakkı var (§ 44 AufenthG). Katkı payı %50, başarıyla bitirince yarısı iade.","700 Stunden. Anspruch durch Familiennachzug (§ 44 AufenthG). Eigenanteil 50 %, bei Bestehen Hälfte zurück."]]),
+  i("z6","Mesleki dil kursu B2 / C1","Berufssprachkurs B2 / C1",["BAMF veya İş Ajansı (Agentur für Arbeit)","BAMF oder Agentur für Arbeit"],
+    [["Tanınma süreci devam ederken de katılınabilir. Geliri düşükse ücretsiz.","Auch während der Anerkennung möglich. Bei geringem Einkommen kostenlos."]])
+ ]},
+ {id:"beruf",color:"var(--plum)",icon:"🎓",tr:"Öğretmenlik – belgeler ve yol",de:"Lehrerin – Unterlagen und Weg",items:[
+  i("p0","Önce kontrol et: KPSS, 1 yıl adaylık, pedagojik formasyon","Zuerst prüfen: KPSS, 1 Jahr Adaylık, Pedagojik Formasyon",["Berlin Eğitim Senatosu’nun kuralı","Regel der Berliner Senatsverwaltung"],
+    [["Berlin 2002 sonrası Türk öğretmenlik diplomalarını ancak bunlarla tam tanır. Eksik varsa ret riski var.","Berlin erkennt türkische Lehramtsabschlüsse nach 2002 nur damit voll an. Fehlt etwas, droht Ablehnung."]],[],
+    "https://www.berlin.de/sen/bjf/anerkennung/lehramtsabschluesse/anerkennung-lehrkraefte-mit-internationalem-abschluss.pdf","Önemli · Wichtig"),
+  {sub:["Türkiye’den","Aus der Türkei"]},
+  i("p1","Lisans diploması","Hochschuldiplom",["Üniversite Öğrenci İşleri","Studierendensekretariat der Universität"]),
+  i("p2","Transkript (dersler ve notlar)","Fächer- und Notenübersicht",["Üniversite Öğrenci İşleri","Studierendensekretariat der Universität"]),
+  i("p3","Diploma eki + onaylı ders içerikleri (AKTS, saat)","Diploma Supplement + Kursbeschreibungen (ECTS, Stunden)",["Üniversite – Fakülte","Universität – Fakultät"],
+    [["Belgelenmeyen dersler „eksik“ sayılır. Ne kadar ayrıntılı, o kadar az ek yükümlülük.","Was nicht belegt ist, zählt als fehlend. Je genauer, desto weniger Auflagen."]]),
+  i("p4","Pedagojik formasyon belgesi","Nachweis Pädagogische Formation",["Üniversite","Universität"]),
+  i("p5","KPSS sonuç belgesi","KPSS-Ergebnis",["ÖSYM veya e-Devlet","ÖSYM oder e-Devlet"]),
+  i("p6","Adaylık belgesi (1 yıl)","Nachweis 1 Jahr Adaylık (Probezeit)",["İl / İlçe Milli Eğitim Müdürlüğü","Provinz-/Kreisschulamt"]),
+  i("p7","Hizmet belgesi veya Valilik onayı","Dienstzeugnis oder Bestätigung der Valilik",["Okul Müdürlüğü, MEB veya Valilik","Schulleitung, MEB oder Valilik"],
+    [["Branş, sınıflar, haftalık ders saati ve süre yazmalı. Son 10 yılda en az 3 yıl deneyim uyum kursunun yerine geçebilir.","Mit Fächern, Klassen, Wochenstunden und Dauer. Mind. 3 Jahre in den letzten 10 Jahren können den Anpassungslehrgang ersetzen."]]),
+  i("p8","İkinci alan belgeleri (yan dal, seçmeli, yüksek lisans)","Nachweise zu einem zweiten Fach",["Üniversite","Universität"],
+    [["Berlin’de öğretmenler iki branşla çalışır. Eksik ikinci alan sonradan tamamlanabilir.","In Berlin haben Lehrkräfte zwei Fächer. Ein fehlendes zweites Fach kann nachstudiert werden."]]),
+  i("p9","Hizmet içi eğitim belgeleri","Fortbildungsnachweise",["MEB","MEB"]),
+  {sub:["Almanya’da","In Deutschland"]},
+  i("p10","Tüm belgelerin yeminli Almanca tercümesi","Beeidigte Übersetzungen aller Zeugnisse",["Yeminli tercüman","Beeidigter Übersetzer"]),
+  i("p11","Almanca özgeçmiş (tablo)","Tabellarischer Lebenslauf auf Deutsch",["–","–"]),
+  i("p12","BundID hesabı aç","BundID-Konto anlegen",["id.bund.de","id.bund.de"],[],[],"https://id.bund.de"),
+  i("p13","Ücretsiz danışmanlık (Türkçe)","Kostenlose Beratung (auf Türkisch)",["TBB / AnQua – Oranienstraße 57, Berlin","TBB / AnQua – Oranienstraße 57, Berlin"],
+    [["Başvurudan önce belgelerin tam ve doğru olup olmadığını birlikte kontrol edersiniz. Ücretsiz ve Türkçe. Türkiye’den e-postayla da yazılabilir.","Vor dem Antrag gemeinsam prüfen, ob die Unterlagen vollständig sind. Kostenlos und auf Türkisch. Auch per E-Mail aus der Türkei möglich."]]),
+  i("p14","Almanca C1, sonra C2","Deutsch C1, dann C2",["Kurs merkezi · C2 sınavı Eğitim Senatosu’nda ücretsiz","Kursträger · C2-Prüfung bei der Senatsverwaltung kostenlos"],
+    [["C1 ile çalışmaya başlanabilir (vekil öğretmenlik, özel okul). Kadrolu iş için C2 şart.","Mit C1 kann man schon arbeiten (Vertretung, Privatschule). Für die feste Stelle ist C2 Pflicht."]]),
+  i("p15","İkinci alanı tamamla","Zweites Fach nachstudieren",["FU Berlin veya HU Berlin","FU Berlin oder HU Berlin"],
+    [["Almanca belgesi: DSH-2, TestDaF 4, telc C1 Hochschule veya Goethe C2. Öğrenim ücreti yok, sadece dönem katkısı (~377 €). Çalışırken de olur.","Deutsch-Nachweis: DSH-2, TestDaF 4, telc C1 Hochschule oder Goethe C2. Keine Studiengebühren, nur Semesterbeitrag (~377 €). Auch neben der Arbeit."]]),
+  i("p16","Uyum kursu VEYA yeterlilik sınavı","Anpassungslehrgang ODER Eignungsprüfung",["Berlin Eğitim Senatosu","Senatsverwaltung für Bildung"],
+    [["Seçim kesindir. Uyum kursu ücretli (stajyer maaşı), C2 yoksa 24 ay, en az C1 gerekir.","Die Wahl ist endgültig. Lehrgang bezahlt (wie Referendare), ohne C2 24 Monate, mindestens C1 nötig."],
+     ["Sonraki başlangıç 05.08.2027 – başvuru 23.03.2027’ye kadar.","Nächster Start 05.08.2027 – Bewerbung bis 23.03.2027."]],[],"https://www.berlin.de/sen/bildung/fachkraefte/lehrerausbildung/vorbereitungsdienst/artikel.1684872.php"),
+  i("p17","C2 ile kadrolu öğretmenlik","Mit C2 feste Stelle an öffentlicher Schule",["Berlin devlet okulları","Öffentliche Schulen Berlin"])
+ ]}
+];
+
+/* ---------- Kontakte (k) und Quellen (q) je Aufgabe ---------- */
+var DIP="https://tuerkei.diplo.de/tr-de/service/05-visaeinreise/";
+var Q={vfam:["Alman temsilcilikleri: Aile birleşimi · Vertretungen: Familiennachzug",DIP+"2720770-2720770"],vwait:["Bekleme süreleri ve iDATA · Wartezeiten und iDATA",DIP+"2729790-2729790"],vtr:["Eş birleşimi (Türkçe) · Ehegattennachzug (TR)","https://tuerkei.diplo.de/tr-tr/service/05-visaeinreise/2769600-2769600"],
+ veh:["Türkiye’de evlilik · Eheschließung in der Türkei","https://tuerkei.diplo.de/tr-de/service/1513838-1513838"],nvi:["NVI Genelgesi 2015 (Evlendirme Yönetmeliği)","https://www.nvi.gov.tr/kurumlar/nvi.gov.tr/mevzuat/nufusmevzuat/talimat/evlenmeyonetmeligindedegisiklikyapilmasinadairyonetmelik.pdf"],
+ a30:["§ 30 AufenthG","https://www.gesetze-im-internet.de/aufenthg_2004/__30.html"],a44:["§ 44 AufenthG","https://www.gesetze-im-internet.de/aufenthg_2004/__44.html"],a4a:["§ 4a AufenthG","https://www.gesetze-im-internet.de/aufenthg_2004/__4a.html"],
+ sgb:["§ 10 SGB V","https://www.gesetze-im-internet.de/sgb_5/__10.html"],bmg:["§ 17 BMG","https://www.gesetze-im-internet.de/bmg/__17.html"],deuf:["§ 4 DeuFöV","https://www.gesetze-im-internet.de/deuf_v/__4.html"],
+ bvw:["BVerwG 1 C 40.18 (2019)","https://www.bverwg.de/250619U1C40.18.0"],lea:["LEA: Visum Ehegattennachzug","https://www.berlin.de/einwanderung/einreise/visumverfahren/laengerer-aufenthalt/artikel.872719.php"],
+ vab:["Berliner Verfahrenshinweise (VAB)","https://www.berlin.de/einwanderung/_assets/20191129.pdf"],s305:["service.berlin.de: Oturum izni aile · Aufenthaltserlaubnis Familie","https://service.berlin.de/dienstleistung/305289/"],
+ s120686:["service.berlin.de: Adres kaydı · Anmeldung","https://service.berlin.de/dienstleistung/120686/"],s120702:["service.berlin.de: Meldebescheinigung","https://service.berlin.de/dienstleistung/120702/"],
+ s329:["service.berlin.de: Öğretmen tanınması · Anerkennung Lehrer/-in","https://service.berlin.de/dienstleistung/329595/"],bro:["Broşür · Broschüre „Lehrkräfte mit internationalem Abschluss“ (2025)","https://www.berlin.de/sen/bjf/anerkennung/lehramtsabschluesse/anerkennung-lehrkraefte-mit-internationalem-abschluss.pdf"],
+ faq:["SSS · FAQ Anerkennung Lehrkräfte","https://www.berlin.de/sen/bjf/anerkennung/lehramtsabschluesse/faq-anerkennung-von-abschluessen-als-lehrkraft/"],
+ bamf:["BAMF: Uyum kursları · Integrationskurse","https://www.bamf.de/DE/Themen/Integration/ZugewanderteTeilnehmende/Integrationskurse/integrationskurse-node.html"],
+ goe:["Goethe-Institut Türkiye: Start Deutsch 1","https://www.goethe.de/ins/tr/de/sta/ist/prf/gzsd1.cfm"],fudsh:["FU Sprachenzentrum: DSH","https://www.sprachenzentrum.fu-berlin.de/downloads/dsh-faq.pdf"],
+ ges:["GEW Berlin: C1/C2 (01.07.2026)","https://www.gew-berlin.de/aktuelles/detailseite/es-geht-auch-anders-1"],vert:["İlan: Vekil öğretmen · Ausschreibung Vertretungslehrkräfte","https://www.karriereportal-stellen.berlin.de/Befristete-Einstellung-von-Vertretungslehrkraeften-de-j68688.html"],
+ dol:["Tercüman listeleri · Dolmetscherlisten","https://tuerkei.diplo.de/tr-de/service/dolmetscherlisten-1614732"],kons:["T.C. Berlin Başkonsolosluğu","https://berlin-bk.mfa.gov.tr"]};
+var VERT=["Almanya Büyükelçiliği Ankara – Atatürk Bulvarı 114, Kavaklıdere · +90 312 455 51 00 (vize soruları sadece iletişim formuyla)","Almanya Başkonsolosluğu İstanbul – İnönü Caddesi 10, Gümüşsuyu · +90 212 334 61 00","Almanya Başkonsolosluğu İzmir – Korutürk Mah., Havuzbaşı Sokak 1, Balçova · +90 232 488 88 88","Randevu sadece iDATA: idata.com.tr"];
+var LEA=["Landesamt für Einwanderung (LEA) – Friedrich-Krause-Ufer 24, 13353 Berlin (aile birleşimi · Familiennachzug)","Sadece randevuyla · Nur mit Termin: berlin.de/einwanderung"];
+var BA=["Bürgeramt – randevu · Termin: service.berlin.de veya · oder Tel. 115"];
+var SEN=["Senatsverwaltung für Bildung, Jugend und Familie – Anerkennungsstelle","Klosterstraße 71, 10179 Berlin · Tel. 030 90227-5050","anerkennungen.lehrer@senbjf.berlin.de"];
+var TBB=["TBB – Tanınma danışmanlığı · Anerkennungsberatung: Oranienstr. 57 (1. kat), 10969 Berlin","Tel. 030 23 62 33 25 (Salı · Di + Cuma · Fr 10–14) · diploma@tbb-berlin.de","Açık danışma · Offene Sprechstunde: Çarşamba · Mittwoch 10–14"];
+var TBBR=["TBB – Hukuk danışmanlığı (vize, oturum) · Rechtsberatung Aufenthalt: Oranienstr. 53, 10969 Berlin","Yüz yüze · vor Ort: Pazartesi · Montag 15–18 (aynı gün 10–11 arası 030 6232624’ü ara · am selben Tag 10–11 Uhr anrufen)","Telefon: Çarşamba · Mittwoch 10–13, 030 6243120"];
+var K={
+ o1:{k:["digital.diplo.de/visa-fz"].concat(TBBR),q:[Q.vfam,Q.vwait]},
+ o2:{k:SEN.concat(TBB),q:[Q.s329,Q.bro,Q.faq]},
+ t1:{k:["Goethe-Institut İstanbul – sınav bürosu · Prüfungsbüro: pruefung-istanbul@goethe.de, +90 212 249 6929","ÖSD sınav merkezi asm (İstanbul-Kadıköy, Beşiktaş, Bursa, İzmir, Ankara): asmsinav@gmail.com"],q:[Q.goe,Q.vfam,Q.a30,Q.bvw]},
+ t2:{k:["e-Devlet: turkiye.gov.tr","Nüfus Müdürlüğü: nvi.gov.tr"],q:[Q.vtr]},
+ t5:{k:["Alman temsilciliklerinin tercüman listeleri · Dolmetscherlisten der Vertretungen"],q:[Q.dol,Q.veh]},
+ t6:{k:VERT,q:[Q.vtr,Q.vwait,Q.vfam]},
+ b1:{k:["T.C. Berlin Başkonsolosluğu – çağrı merkezi · Callcenter 24 h: +49 30 56 83 73 099","Randevu · Termin: berlin-bk.mfa.gov.tr → „Randevu Al“ · Mo–Fr 08:30–16:30","e-Devlet: turkiye.gov.tr"],q:[Q.kons,Q.nvi]},
+ b2:{k:BA.concat(["Online ücretsiz (BundID + eID) · Online kostenlos, sonst 10 €"]),q:[Q.s120702,Q.vtr]},
+ b4:{q:[Q.lea,Q.vab]},
+ b5:{q:[Q.vab]},
+ b6:{q:[Q.sgb]},
+ b7:{k:LEA,q:[Q.lea]},
+ n1:{k:["F’nin ilçesindeki Belediye – Evlendirme Müdürlüğü (belediyenin web sitesinden randevu) · Standesamt der Gemeinde, Termin über deren Webseite"],q:[Q.nvi,Q.veh]},
+ n2:{q:[Q.veh]},
+ n3:{k:["e-Devlet: turkiye.gov.tr"],q:[Q.vtr]},
+ z1:{k:BA,q:[Q.s120686,Q.bmg]},
+ z2:{q:[Q.sgb]},
+ z3:{k:LEA,q:[Q.s305,Q.a4a]},
+ z5:{k:["Kurs bulma · Kurssuche: bamf-navi.bamf.de"],q:[Q.bamf,Q.a44]},
+ z6:{k:["Agentur für Arbeit veya BAMF · oder BAMF"],q:[Q.deuf]},
+ p0:{k:TBB,q:[Q.bro]},
+ p5:{k:["ÖSYM: osym.gov.tr · e-Devlet"]},
+ p6:{k:["Okul Müdürlüğü veya İl/İlçe Milli Eğitim Müdürlüğü"],q:[Q.bro]},
+ p7:{k:["Okul Müdürlüğü, İlçe Milli Eğitim veya Valilik"],q:[Q.bro]},
+ p10:{q:[Q.s329]},
+ p11:{q:[Q.s329]},
+ p12:{k:["BundID yardım hattı · Hotline: +49 7132 981 2746"]},
+ p13:{k:TBB.concat(["IQ Netzwerk Berlin (Türkçe form): berlin.netzwerk-iq.de"])},
+ p14:{k:["C2 sınavı · C2-Sprachprüfung Senatsverwaltung: 030 90227-6928 (Pzt/Per · Mo/Do 14–15, Çar · Mi 10–12)"],q:[Q.faq,Q.ges,Q.vert]},
+ p15:{k:["FU Berlin – Dahlem School of Education, Studienbüro: fu-berlin.de/sites/dse","HU Berlin – Professional School of Education: pse.hu-berlin.de"],q:[Q.fudsh,Q.faq]},
+ p16:{k:SEN,q:[Q.faq,Q.bro]},
+ p17:{q:[Q.faq,Q.ges]}
+};
+G.forEach(function(g){g.items.forEach(function(it){if(it.id){var x=K[it.id]||{};it.k=x.k||[];it.q=x.q||[]}})});
+
+/* ---------- state ---------- */
+var SK="nik_v1";
+function lsGet(){try{return JSON.parse(localStorage.getItem(SK))||null}catch(e){return null}}
+var S=lsGet()||{d:{},sent:0,got:0};
+function save(){try{localStorage.setItem(SK,JSON.stringify(S))}catch(e){toast("Kaydedilemedi · Speichern nicht möglich")}}
+function isDone(id){return !!(S.d[id]&&S.d[id][0])}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var ALL=[];G.forEach(function(g){g.items.forEach(function(it){if(it.id){it.g=g;ALL.push(it)}})});
+
+/* ---------- render ---------- */
+function render(){
+  var h="";
+  G.forEach(function(g){
+    var its=g.items.filter(function(x){return x.id}),done=its.filter(function(x){return isDone(x.id)}).length;
+    h+='<section class="group" id="g-'+g.id+'"><div class="ghead"><div class="gicon" style="background:'+g.color+'" aria-hidden="true">'+g.icon+'</div><div class="gtitle"><h2>'+esc(g.tr)+'</h2><p>'+esc(g.de)+'</p></div><span class="gcount" data-gc="'+g.id+'">'+done+' / '+its.length+'</span></div><div class="list">';
+    g.items.forEach(function(it){
+      if(it.sub){h+='<div class="sub-h">'+esc(it.sub[0])+' · '+esc(it.sub[1])+'</div>';return}
+      var hasInfo=it.info.length||it.docs.length||it.link||it.k.length||it.q.length||(it.wo&&it.wo[0]!=="–");
+      h+='<div class="item'+(isDone(it.id)?' done':'')+'" id="i-'+it.id+'">'+
+        '<div class="row"><button class="chk" type="button" data-chk="'+it.id+'" aria-label="Erledigt / Tamamlandı" aria-pressed="'+isDone(it.id)+'">'+CHECK+'</button>'+
+        '<button class="txt" type="button" data-open="'+it.id+'" aria-expanded="false"><span class="tr">'+esc(it.tr)+'</span><span class="de">'+esc(it.de)+'</span>'+
+        (it.wo&&it.wo[0]!=="–"?'<span class="where">'+PIN+esc(it.wo[0])+'</span>':'')+
+        (it.flag?'<span class="flag">'+esc(it.flag)+'</span>':'')+'</button>'+(hasInfo?ARROW:'')+'</div>'+
+        '<div class="info" hidden>'+
+          (it.wo&&it.wo[0]!=="–"&&it.wo[1]!==it.wo[0]?'<p class="de2" style="margin:0;color:var(--sub);font-style:italic;font-size:.88rem">📍 '+esc(it.wo[1])+'</p>':'')+
+          (it.docs.length?'<div class="blk"><h4>Belgeler · Unterlagen</h4><ul>'+it.docs.map(function(d){return'<li>'+esc(d[0])+(d[1]!==d[0]?'<span>'+esc(d[1])+'</span>':'')+'</li>'}).join("")+'</ul></div>':'')+
+          (it.info.length?'<div class="blk"><h4>Neden · Warum</h4>'+it.info.map(function(x){return'<p>'+esc(x[0])+'</p><p class="de2">'+esc(x[1])+'</p>'}).join("")+'</div>':'')+
+          (it.k.length?'<div class="blk"><h4>İletişim · Kontakt</h4><ul class="kl">'+it.k.map(function(x){return'<li>'+linkify(x)+'</li>'}).join("")+'</ul></div>':'')+
+          (it.link?'<a class="go" target="_blank" rel="noopener" href="'+esc(it.link)+'">Resmi sayfa · Offizielle Seite ↗</a>':'')+
+          (it.q.length?'<div class="src"><h4>Kaynaklar · Quellen</h4>'+it.q.map(function(s){return'<a target="_blank" rel="noopener" href="'+esc(s[1])+'">'+esc(s[0])+' ↗</a>'}).join("")+'</div>':'')+
+        '</div></div>';
+    });
+    h+='</div></section>';
+  });
+  document.getElementById("groups").innerHTML=h;
+  summary();
+}
+function summary(){
+  var n=ALL.length,d=ALL.filter(function(x){return isDone(x.id)}).length,p=Math.round(d*100/n);
+  document.getElementById("bar").style.width=p+"%";document.getElementById("pct").textContent=p+" %";
+  G.forEach(function(g){var its=g.items.filter(function(x){return x.id});var el=document.querySelector('[data-gc="'+g.id+'"]');if(el)el.textContent=its.filter(function(x){return isDone(x.id)}).length+" / "+its.length});
+  var nx=ALL.filter(function(x){return !isDone(x.id)})[0],b=document.getElementById("next");
+  if(!nx){b.hidden=true;return}b.hidden=false;b.dataset.go=nx.id;
+  document.getElementById("next-tr").textContent=nx.tr;document.getElementById("next-de").textContent=nx.de;
+  document.getElementById("next-w").innerHTML=PIN+esc(nx.wo?nx.wo[0]:"");
+  var st=document.getElementById("stamp");st.textContent=(S.got?"Son eşitleme · Zuletzt abgeglichen: "+fmt(S.got):"");
+}
+function linkify(s){
+  return esc(s).replace(/([\w.+-]+@[\w-]+\.[\w.-]+)/g,'<a href="mailto:$1">$1</a>')
+    .replace(/(\+?\d[\d\s\-]{6,}\d)/g,function(m){return'<a href="tel:'+m.replace(/[\s-]/g,"")+'">'+m+'</a>'})
+    .replace(/(^|[\s(:])((?:[a-z0-9-]+\.)+(?:de|com\.tr|gov\.tr|com|tr)(?:\/[\w\-\/.]*)?)/gi,function(m,p,u){return p+'<a target="_blank" rel="noopener" href="https://'+u+'">'+u+'</a>'});
+}
+function fmt(t){var d=new Date(t);function z(n){return(n<10?"0":"")+n}return z(d.getDate())+"."+z(d.getMonth()+1)+". "+z(d.getHours())+":"+z(d.getMinutes())}
+
+document.getElementById("groups").addEventListener("click",function(e){
+  var c=e.target.closest("[data-chk]");
+  if(c){var id=c.dataset.chk,v=!isDone(id);S.d[id]=[v?1:0,Date.now()];save();var el=document.getElementById("i-"+id);el.classList.toggle("done",v);c.setAttribute("aria-pressed",v);summary();if(v&&navigator.vibrate)navigator.vibrate(15);return}
+  var o=e.target.closest("[data-open]");
+  if(o){var it=document.getElementById("i-"+o.dataset.open),inf=it.querySelector(".info");var open=inf.hidden;inf.hidden=!open;it.classList.toggle("open",open);o.setAttribute("aria-expanded",open)}
+});
+document.getElementById("next").addEventListener("click",function(){
+  var id=this.dataset.go,el=document.getElementById("i-"+id);if(!el)return;
+  el.scrollIntoView({behavior:"smooth",block:"center"});var inf=el.querySelector(".info");if(inf.hidden){inf.hidden=false;el.classList.add("open")}
+});
+
+/* ---------- teilen ---------- */
+var tt;function toast(m){var t=document.getElementById("toast");t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(function(){t.hidden=true},3500)}
+function sheet(t,p,x,btns){var o=document.getElementById("ov");document.getElementById("sh-t").textContent=t;document.getElementById("sh-p").textContent=p;document.getElementById("sh-x").innerHTML=x||"";var b=document.getElementById("sh-b");b.innerHTML="";
+  btns.forEach(function(k){var el=document.createElement("button");el.type="button";el.textContent=k.t;if(k.pri)el.className="pri";el.onclick=function(){if(k.fn&&k.fn()===true)return;o.hidden=true};b.appendChild(el)});o.hidden=false}
+document.getElementById("ov").addEventListener("click",function(e){if(e.target===this)this.hidden=true});
+function b64e(s){var b=new TextEncoder().encode(s),r="";for(var i=0;i<b.length;i++)r+=String.fromCharCode(b[i]);return btoa(r).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}
+function b64d(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";var b=atob(s),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return new TextDecoder().decode(u)}
+function msg(){var p={a:"nik",t:Date.now(),d:S.d},n=ALL.filter(function(x){return isDone(x.id)}).length;
+  return "Nikâh & Almanya – "+n+"/"+ALL.length+" ✓\nUygulamada „Ekle“ye dokun ve bu mesajı yapıştır.\nIn der App auf „Ekle / Einfügen“ tippen und diese Nachricht einfügen.\n\nNIK1:"+b64e(JSON.stringify(p))}
+document.getElementById("b-send").onclick=function(){
+  var m=msg();
+  if(navigator.share){navigator.share({text:m}).then(function(){S.sent=Date.now();save()}).catch(function(e){if(e&&e.name!=="AbortError")copyFallback(m)})}else copyFallback(m);
+};
+function copyFallback(m){
+  sheet("Paylaş · Senden","Metni kopyala ve WhatsApp’ta gönder. · Text kopieren und per WhatsApp schicken.","",[
+    {t:"Kopyala · Kopieren",pri:true,fn:function(){if(navigator.clipboard)navigator.clipboard.writeText(m).then(function(){toast("Kopyalandı · Kopiert")},function(){});}},
+    {t:"WhatsApp",fn:function(){location.href="https://wa.me/?text="+encodeURIComponent(m)}},{t:"Kapat · Schließen"}]);
+}
+document.getElementById("b-paste").onclick=function(){
+  sheet("Ekle · Einfügen","Gelen mesajın tamamını buraya yapıştır. · Die ganze Nachricht hier einfügen.",'<textarea id="pin" aria-label="Mesaj"></textarea>',[
+    {t:"Uygula · Übernehmen",pri:true,fn:function(){return apply(document.getElementById("pin").value)}},{t:"Vazgeç · Abbrechen"}]);
+  var ta=document.getElementById("pin");if(navigator.clipboard&&navigator.clipboard.readText)navigator.clipboard.readText().then(function(t){if(t&&t.indexOf("NIK1:")>-1)ta.value=t}).catch(function(){});
+};
+function apply(txt){
+  var m=/NIK1:([A-Za-z0-9_-]+)/.exec(txt||"");if(!m){toast("Geçerli mesaj yok · Keine gültige Nachricht");return true}
+  var p;try{p=JSON.parse(b64d(m[1]))}catch(e){toast("Mesaj bozuk · Nachricht beschädigt");return true}
+  if(!p||p.a!=="nik"){toast("Geçerli mesaj yok · Keine gültige Nachricht");return true}
+  var n=0;Object.keys(p.d||{}).forEach(function(id){var a=p.d[id],c=S.d[id];if(!ALL.some(function(x){return x.id===id}))return;if(!c||a[1]>c[1]){S.d[id]=[a[0]?1:0,+a[1]||0];n++}});
+  S.got=Date.now();save();render();toast(n+" değişiklik alındı · "+n+" Änderungen übernommen");
+}
+render();
+if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(function(){});
+window.__nik={msg:msg,apply:apply,S:function(){return S}};
+})();
+</script>
+</body>
+</html>
